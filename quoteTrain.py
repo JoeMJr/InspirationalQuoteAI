@@ -4,7 +4,8 @@ from torch.nn import functional as F
 from datetime import datetime
 import os
 import json
-import quoteGPT
+from quoteGPT import QuoteGPT
+import quoteGPT as GPTFunc
 import countQuotes
 
 # Turn everything here into functions for easy use later
@@ -49,13 +50,14 @@ else:
     block_size = 128
     batch_size = 8
     print("Making and saving the model")
-    model = quoteGPT(vocab_size, block_size=block_size)
+    model = QuoteGPT(vocab_size, block_size)
     optimizer = torch.optim.AdamW(model.parameters(), lr=2e-4)
     #
     with open("inspoVocab.json", "w") as f:
         json.dump({"stoi": stoi, "itos": itos}, f)
     #
     # FINALLY FOUND A NICE WAY TO GET A GOOD AMOUNT OF TRAINING STEPS BASED ON THE DATA
+    print("Setting Training Time")
     qoute_num = countQuotes.count_string_in_large_file(file_name, string_to_find)
     planned_epochs = 50
     the_num = (qoute_num / batch_size) * planned_epochs
@@ -64,7 +66,7 @@ else:
     print("Training model...")
     # use this link to keep computer on https://www.youtube.com/watch?v=jfKfPfyJRdk
     for step in range(step_range):
-        xb, yb = quoteGPT.get_batch(data, block_size, batch_size)
+        xb, yb = GPTFunc.get_batch(data, block_size, batch_size)
         logits = model(xb)
         loss = F.cross_entropy(logits.view(-1, vocab_size), yb.view(-1))
         
@@ -78,3 +80,10 @@ else:
     torch.save(model.state_dict(), model_path)
     print("Model saved to", model_path)
 
+
+
+later = datetime.now()
+print("End Time =", later)
+timmDiff = later - now
+
+print("Time Elapsed: ", timmDiff)

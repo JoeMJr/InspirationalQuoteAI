@@ -7,7 +7,7 @@ with open('insparation.csv', newline='', encoding="utf8") as csvfile:
     for row in reader:
         #print(row['Quote'])
         cleaned_quote = row['Quote'].replace('\n', ' ').replace('\r', ' ').strip()
-        outfile.write(cleaned_quote + "<|endoftext|>" +"\n")
+        outfile.write("Quote: " + cleaned_quote + "<|endoftext|>" +"\n") # I forgot to add Quote: to the beginning an I now have to retrain my model
     outfile.close()
 
 # NOTE TO SELF - I need to add a section for cleaning strings that contain weird characters from utf-8 encoding
